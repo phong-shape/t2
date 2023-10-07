@@ -1,7 +1,6 @@
 package com.example.t2
 
 import android.os.Bundle
-import android.widget.GridLayout
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.t2.number_generator.BasicGenerator
 import com.example.t2.number_generator.NumberGenerator
 import com.example.t2.ui.AddGeneratorButton
 import com.example.t2.ui.NumberGeneratorView
@@ -36,22 +36,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val generator = object : NumberGenerator {
-
-            val c = mutableStateOf(0)
-
-            override fun generateNumber() {
-                c.value = (1..100).random()
-            }
-
-            override val currentNumber: Int by c
-
-            override val currentNumberWithDecoration: String
-                get() = currentNumber.toString()
-
-            override val id: Int
-                get() = 1
-        }
+        val generator = BasicGenerator()
 
         setContent {
             T2Theme {
