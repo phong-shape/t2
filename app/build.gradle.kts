@@ -2,9 +2,15 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 //    id ("kotlin-android-extensions")
-    id ("kotlin-kapt")
+    kotlin("kapt")
+//    id("com.google.dagger.hilt.android")
 
 }
+
+kapt {
+    correctErrorTypes = true
+}
+
 
 android {
     namespace = "com.example.t2"
@@ -36,9 +42,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-//    kotlinOptions {
-//        jvmTarget = "1.8"
-//    }
+
     buildFeatures {
         compose = true
     }
@@ -56,6 +60,10 @@ dependencies {
 
     implementation ("com.google.dagger:dagger:2.48")
     kapt ("com.google.dagger:dagger-compiler:2.48")
+
+//    implementation("com.google.dagger:hilt-android:2.44")
+//    kapt("com.google.dagger:hilt-android-compiler:2.44")
+
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
