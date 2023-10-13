@@ -26,18 +26,51 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.t2.number_generator.BasicGenerator
+import com.example.t2.act_provider.di.ContextNumG
+import com.example.t2.di.EvenGenerator
+import com.example.t2.di.MyEntryPoint
+import com.example.t2.di.OddGenerator
+import com.example.t2.di.RandomGenerator2Q
 import com.example.t2.number_generator.NumberGenerator
+import com.example.t2.number_generator.WeirdNumberGenerator
 import com.example.t2.ui.AddGeneratorButton
 import com.example.t2.ui.NumberGeneratorView
 import com.example.t2.ui.theme.T2Theme
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+
+    @ContextNumG
+    @Inject
+    lateinit var cGenerator:NumberGenerator
+
+    @Inject
+    lateinit var generator: NumberGenerator
+
+    @Inject
+    lateinit var generator2: NumberGenerator
+
+    @Inject
+    @EvenGenerator
+    lateinit var generator3: NumberGenerator
+
+    @Inject
+    @OddGenerator
+    lateinit var generator4: NumberGenerator
+
+    @Inject
+    @RandomGenerator2Q
+    lateinit var generator5:NumberGenerator
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val generator = BasicGenerator()
 
+        val g5 = MyEntryPoint.entry(this).generator5
+        val weird = WeirdNumberGenerator(g5)
         setContent {
             T2Theme {
                 Surface(
@@ -45,7 +78,10 @@ class MainActivity : ComponentActivity() {
                     color = Color.White,
                 ) {
                     var generators: List<NumberGenerator> by remember {
-                        mutableStateOf((1..20).map { generator })
+                        mutableStateOf(listOf(
+                            generator,generator2,generator3, generator4,
+                            generator5,cGenerator
+                        ))
                     }
 
                     Column(Modifier.fillMaxWidth()) {
