@@ -99,9 +99,13 @@ class MainActivity : ComponentActivity() {
     fun uncertainLifetime(){
         val f = FFactory.makeF()
         val e = f.e
+        val c = f.c
         setContent {
             Column {
                 Text("f.d == e.d: ${f.d == e.d}")
+                Text("c.a == c.b.a: ${c.a == c.b.a}")
+                Text("c.so1 == f.so1: ${c.so1 == f.so1}")
+                Text("c.so1 == c.b.so1: ${c.so1 == c.b.so1}")
             }
         }
     }

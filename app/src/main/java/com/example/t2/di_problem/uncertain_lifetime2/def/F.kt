@@ -10,6 +10,6 @@ import javax.inject.Inject
 class F @Inject constructor(
     val d: D,
     val e: E,
-//    val c: C,
-//    val so1:SystemObject1,
+    val c: C,
+    val so1:SystemObject1,
 )

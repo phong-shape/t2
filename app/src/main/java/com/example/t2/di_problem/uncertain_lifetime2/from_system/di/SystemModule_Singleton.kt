@@ -1,7 +1,5 @@
 package com.example.t2.di_problem.uncertain_lifetime2.from_system.di
 
-import com.example.t2.di_problem.uncertain_lifetime2.abc.di.C_Factory
-import com.example.t2.di_problem.uncertain_lifetime2.abc.di.C_FactoryImp
 import com.example.t2.di_problem.uncertain_lifetime2.def.di.F_Factory
 import com.example.t2.di_problem.uncertain_lifetime2.def.di.F_FactoryImp
 import com.example.t2.di_problem.uncertain_lifetime2.from_system.SystemObject1
@@ -37,7 +35,4 @@ interface SystemModule_Singleton {
     @Singleton
     fun compFactory(i: F_FactoryImp): F_Factory
 
-    @Binds
-    @Singleton
-    fun cFactory(i: C_FactoryImp):C_Factory
 }
