@@ -31,7 +31,7 @@ import com.example.t2.di_problem.circular.B
 import com.example.t2.di.EvenGenerator
 import com.example.t2.di.OddGenerator
 import com.example.t2.di.RandomGenerator2Q
-import com.example.t2.di_problem.uncertain_lifetime2.BridgeObject
+import com.example.t2.di_problem.uncertain_lifetime2.def.di.F_Factory
 import com.example.t2.di_problem.uncertaint_lifetime.CompByDagger
 import com.example.t2.di_problem.uncertaint_lifetime.ContextAccessor
 import com.example.t2.di_problem.uncertaint_lifetime.SeqCompBuilder
@@ -88,7 +88,7 @@ class MainActivity : ComponentActivity() {
     lateinit var contextAccessor: ContextAccessor
 
     @Inject
-    lateinit var bridgeObject: BridgeObject
+    lateinit var FFactory: F_Factory
 
     val seqComp get() = seqCompBuilder.build()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -97,7 +97,7 @@ class MainActivity : ComponentActivity() {
     }
 
     fun uncertainLifetime(){
-        val f = bridgeObject.makeF()
+        val f = FFactory.makeF()
         val e = f.e
         setContent {
             Column {
