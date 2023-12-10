@@ -1,51 +1,58 @@
 package com.example.t2
 
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.t2.act_provider.di.ContextNumG
+import com.example.t2.di_problem.circular.A
+import com.example.t2.di_problem.circular.B
 import com.example.t2.di.EvenGenerator
-import com.example.t2.di.MyEntryPoint
 import com.example.t2.di.OddGenerator
 import com.example.t2.di.RandomGenerator2Q
+import com.example.t2.di_problem.uncertain_lifetime2.BridgeObject
+import com.example.t2.di_problem.uncertaint_lifetime.CompByDagger
+import com.example.t2.di_problem.uncertaint_lifetime.ContextAccessor
+import com.example.t2.di_problem.uncertaint_lifetime.SeqCompBuilder
+import com.example.t2.di_problem.uncertaint_lifetime.SeqEntryPoint
 import com.example.t2.number_generator.NumberGenerator
-import com.example.t2.number_generator.WeirdNumberGenerator
-import com.example.t2.ui.AddGeneratorButton
-import com.example.t2.ui.NumberGeneratorView
 import com.example.t2.ui.theme.T2Theme
+import dagger.hilt.EntryPoints
 import dagger.hilt.android.AndroidEntryPoint
+//import io.heap.autocapture.ViewAutocaptureSDK
+//import io.heap.core.Heap
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+import javax.inject.Provider
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-
     @ContextNumG
     @Inject
-    lateinit var cGenerator:NumberGenerator
+    lateinit var cGenerator: NumberGenerator
 
     @Inject
     lateinit var generator: NumberGenerator
@@ -63,98 +70,131 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     @RandomGenerator2Q
-    lateinit var generator5:NumberGenerator
+    lateinit var generator5: NumberGenerator
 
+    @Inject
+    lateinit var a: A
+
+    @Inject
+    lateinit var b: B
+
+    @Inject
+    lateinit var seqCompBuilder: SeqCompBuilder
+
+    @Inject
+    lateinit var daggerCompBuilderProvider:Provider<CompByDagger.Builder>
+
+    @Inject
+    lateinit var contextAccessor: ContextAccessor
+
+    @Inject
+    lateinit var bridgeObject: BridgeObject
+
+    val seqComp get() = seqCompBuilder.build()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        uncertainLifetime()
+    }
 
-
-        val g5 = MyEntryPoint.entry(this).generator5
-        val weird = WeirdNumberGenerator(g5)
+    fun uncertainLifetime(){
+        val f = bridgeObject.makeF()
+        val e = f.e
         setContent {
-            T2Theme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = Color.White,
-                ) {
-                    var generators: List<NumberGenerator> by remember {
-                        mutableStateOf(listOf(
-                            generator,generator2,generator3, generator4,
-                            generator5,cGenerator
-                        ))
+            Column {
+                Text("f.d == e.d: ${f.d == e.d}")
+            }
+        }
+    }
+    fun oldUncertainLifetime(){
+        val seqEntryPoint = EntryPoints.get(seqComp, SeqEntryPoint::class.java)
+        val b1 = daggerCompBuilderProvider.get()
+        val comp = b1.build()
+        comp.inject(this)
+
+        val actC = this
+        setContent {
+            var i by remember{ mutableStateOf(1) }
+            Column {
+                Button(onClick = { i+=1 }) {
+                    Text("${i}")
+                }
+                Text("app context: ${comp.contextAccessor.context == applicationContext}")
+                Text("act context: ${comp.contextAccessor.actContext == actC}")
+                Text("context accessor: ${comp.contextAccessor == contextAccessor}")
+                Text("generator: ${comp.contextAccessor.generator3 == generator3}")
+            }
+        }
+    }
+
+
+    private fun setListenersToAllViews(root: View) {
+        if(root is ViewGroup){
+            for (i in 0 until root.childCount) {
+                val child = root.getChildAt(i)
+                if (child is ViewGroup) {
+                    setListenersToAllViews(child)
+                } else {
+                    // Example: Set an OnClickListener to each view
+                    child.setOnClickListener { v: View? ->
+                        println("clickedOn ${v}")
                     }
+                }
+            }
+        }else{
+            root.setOnClickListener {
+                println("clicked on root")
+            }
+        }
+    }
 
-                    Column(Modifier.fillMaxWidth()) {
-                        Column(
-                            Modifier
-                                .weight(1f)
-                                .verticalScroll(rememberScrollState()),
-                        ) {
-                            for(g in generators){
-                                NumberGeneratorView(g)
-                            }
-                        }
+}
 
-                        Divider(color = MaterialTheme.colorScheme.primary)
+/**
+ * Bottomsheet for kimon
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BTS() {
+    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val cs = rememberCoroutineScope()
+    var s by remember { mutableStateOf(false) }
+    if (s) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                s = false
+            },
+            sheetState = state,
+            windowInsets = WindowInsets.navigationBars,
+            ) {
+            Column(
+                Modifier
+//                    .fillMaxHeight()
+                    .background(Color.Green)
 
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 20.dp)
-                                .padding(top = 7.dp),
-                            horizontalArrangement = Arrangement.SpaceEvenly,
-                        ) {
-                            AddGeneratorButton(
-                                text = "Odd\n(S)",
-                            ) {
-                                // add a singleton odd generator
-                            }
-
-                            AddGeneratorButton(
-                                text = "Even\n(S)",
-                            ) {
-                                // add a single ton even generator
-                            }
-
-                            AddGeneratorButton(
-                                text = "Random\n(S)",
-                            ) {
-                                // add a singleton random generator
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 20.dp)
-                                .padding(bottom = 5.dp),
-                            horizontalArrangement = Arrangement.SpaceEvenly,
-                        ) {
-                            AddGeneratorButton(
-                                text = "Odd\n(N)",
-                            ) {
-                                // add a new odd generator
-                            }
-
-                            AddGeneratorButton(
-                                text = "Even\n(N)",
-                            ) {
-                                // add a new even generator
-                            }
-
-                            AddGeneratorButton(
-                                text = "Random\n(N)",
-                            ) {
-                                // add a new random generator
-                            }
-                        }
-                    }
+            ) {
+                for (x in 1..20) {
+                    Text(text = "Item $x")
                 }
             }
         }
     }
+
+    Button(
+        onClick = {
+            cs.launch {
+                s = !s
+            }
+            println("x13q qweqweqweqweqweqw")
+        },
+        modifier = Modifier.padding(100.dp)
+    ) {
+        Text("SH")
+    }
+}
+
+@Composable
+fun QWE(i: Int) {
+    Text(text = "${i}")
 }
 
 @Composable

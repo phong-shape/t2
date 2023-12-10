@@ -1,4 +1,4 @@
-package com.example.t2.circular
+package com.example.t2.di_problem.circular
 
 interface B{
     val b:Int

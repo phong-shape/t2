@@ -15,8 +15,10 @@ import javax.inject.Inject
 class ContextNumberGenerator @Inject constructor(
     val currentActProvider: CurrentActProvider,
 ):NumberGenerator{
+
     val n: MutableState<Int> = mutableStateOf(0)
     val context:Activity? get()=currentActProvider.currentAct
+
     override fun generateNumber() {
         val randomNum = (1 .. 1000).random() + (context?.hashCode()?:-1)
         n.value = randomNum

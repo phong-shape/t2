@@ -4,6 +4,8 @@ plugins {
 //    id ("kotlin-android-extensions")
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
+    id("io.heap.gradle") version "0.3.+"
+
 
 }
 
@@ -57,9 +59,16 @@ android {
 }
 
 dependencies {
+    implementation( "androidx.compose.runtime:runtime-livedata:1.5.4")
 
-//    implementation ("com.google.dagger:dagger:2.48")
-//    kapt ("com.google.dagger:dagger-compiler:2.48")
+    implementation ("org.aspectj:aspectjrt:1.9.8")
+//    implementation ("org.aspectj:aspectjweaver:1.9.8")
+
+    implementation("io.heap.core:heap-android-core:0.4.+")
+    implementation("io.heap.autocapture:heap-autocapture-view:0.4.+")
+
+    implementation ("com.google.dagger:dagger:2.48")
+    kapt ("com.google.dagger:dagger-compiler:2.48")
 
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
@@ -80,4 +89,7 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    // https://mvnrepository.com/artifact/androidx.compose.material3/material3
+    implementation("androidx.compose.material3:material3:1.1.2")
+
 }
