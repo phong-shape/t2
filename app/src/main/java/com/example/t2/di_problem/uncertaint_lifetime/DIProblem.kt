@@ -24,7 +24,6 @@ annotation class CustomCompScope
 
 
 
-//@CustomCompScope
 @ActivityScoped
 class D @Inject constructor() {
     fun d1(): String {
@@ -155,7 +154,7 @@ interface CompByDagger {
 
 
 
-@DefineComponent(parent = SingletonComponent::class)
+@DefineComponent(parent = ActivityComponent::class)
 @CustomCompScope
 interface SeqComponent
 
@@ -167,6 +166,6 @@ interface SeqCompBuilder {
 @EntryPoint
 @InstallIn(SeqComponent::class)
 interface SeqEntryPoint {
-//    fun getF(): F_Seq
+    fun getF(): F_Seq
 //    fun getE(): E
 }

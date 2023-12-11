@@ -93,7 +93,20 @@ class MainActivity : ComponentActivity() {
     val seqComp get() = seqCompBuilder.build()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        uncertainLifetime()
+//        uncertainLifetime()
+        uncertainLifetime3()
+    }
+
+    fun uncertainLifetime3(){
+        val comp = seqCompBuilder.build()
+        val e = EntryPoints.get(comp, SeqEntryPoint::class.java)
+        val f = e.getF()
+        setContent {
+
+            Column {
+                Text("aa: ${f.d == f.e.d}")
+            }
+        }
     }
 
     fun uncertainLifetime(){

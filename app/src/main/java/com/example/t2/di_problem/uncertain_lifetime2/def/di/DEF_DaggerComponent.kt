@@ -28,6 +28,7 @@ interface DEF_DaggerComponent {
         @BindsInstance
         fun setSO2(i:SystemObject2):Builder
 
+
         fun build(): DEF_DaggerComponent
     }
 }
