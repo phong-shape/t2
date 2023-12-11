@@ -20,10 +20,7 @@ package com.example.t2.di_problem.uncertain_lifetime2.def
  *
  * Weakness:
  * - Anything from the system must be provided manually to the Dagger builder via the bridge object. However, at least, everything is in one place.
- *
- * Discussion:
- * - if I attach the dagger component (as subcomponent) directly to the system component, it becomes a pointless abstraction layer, because I can just simply use the system component directly.
- * -
+ * - Don't use this, use hilt custom component instead.
  *
  */
 

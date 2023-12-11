@@ -32,10 +32,10 @@ import com.example.t2.di.EvenGenerator
 import com.example.t2.di.OddGenerator
 import com.example.t2.di.RandomGenerator2Q
 import com.example.t2.di_problem.uncertain_lifetime2.def.di.F_Factory
-import com.example.t2.di_problem.uncertaint_lifetime.CompByDagger
 import com.example.t2.di_problem.uncertaint_lifetime.ContextAccessor
-import com.example.t2.di_problem.uncertaint_lifetime.SeqCompBuilder
-import com.example.t2.di_problem.uncertaint_lifetime.SeqEntryPoint
+import com.example.t2.di_problem.uncertaint_lifetime.CustomHiltComponent_Accessor
+import com.example.t2.di_problem.uncertaint_lifetime.CustomHiltComponent_Builder
+import com.example.t2.di_problem.uncertaint_lifetime.CustomHiltComponent_EntryPoint
 import com.example.t2.number_generator.NumberGenerator
 import com.example.t2.ui.theme.T2Theme
 import dagger.hilt.EntryPoints
@@ -44,7 +44,6 @@ import dagger.hilt.android.AndroidEntryPoint
 //import io.heap.core.Heap
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import javax.inject.Provider
 
 
 @AndroidEntryPoint
@@ -79,27 +78,24 @@ class MainActivity : ComponentActivity() {
     lateinit var b: B
 
     @Inject
-    lateinit var seqCompBuilder: SeqCompBuilder
-
-    @Inject
-    lateinit var daggerCompBuilderProvider:Provider<CompByDagger.Builder>
+    lateinit var customHiltComp: CustomHiltComponent_Builder
 
     @Inject
     lateinit var contextAccessor: ContextAccessor
 
     @Inject
-    lateinit var FFactory: F_Factory
+    lateinit var f_factory: F_Factory
 
-    val seqComp get() = seqCompBuilder.build()
+    val seqComp get() = customHiltComp.build()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        uncertainLifetime()
-        uncertainLifetime3()
+//        uncertainLifetime_usingCustomDaggerComponent()
+        uncertainLifetime_usingCustomHiltComponent()
     }
 
-    fun uncertainLifetime3(){
-        val comp = seqCompBuilder.build()
-        val e = EntryPoints.get(comp, SeqEntryPoint::class.java)
+    fun uncertainLifetime_usingCustomHiltComponent(){
+        val comp = customHiltComp.build()
+        val e = EntryPoints.get(comp, CustomHiltComponent_EntryPoint::class.java)
         val f = e.getF()
         setContent {
 
@@ -109,8 +105,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    fun uncertainLifetime(){
-        val f = FFactory.makeF()
+    fun uncertainLifetime_usingCustomDaggerComponent(){
+        val f = f_factory.makeF()
         val e = f.e
         val c = f.c
         setContent {
@@ -119,26 +115,6 @@ class MainActivity : ComponentActivity() {
                 Text("c.a == c.b.a: ${c.a == c.b.a}")
                 Text("c.so1 == f.so1: ${c.so1 == f.so1}")
                 Text("c.so1 == c.b.so1: ${c.so1 == c.b.so1}")
-            }
-        }
-    }
-    fun oldUncertainLifetime(){
-        val seqEntryPoint = EntryPoints.get(seqComp, SeqEntryPoint::class.java)
-        val b1 = daggerCompBuilderProvider.get()
-        val comp = b1.build()
-        comp.inject(this)
-
-        val actC = this
-        setContent {
-            var i by remember{ mutableStateOf(1) }
-            Column {
-                Button(onClick = { i+=1 }) {
-                    Text("${i}")
-                }
-                Text("app context: ${comp.contextAccessor.context == applicationContext}")
-                Text("act context: ${comp.contextAccessor.actContext == actC}")
-                Text("context accessor: ${comp.contextAccessor == contextAccessor}")
-                Text("generator: ${comp.contextAccessor.generator3 == generator3}")
             }
         }
     }
