@@ -15,7 +15,6 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         this.registerActivityLifecycleCallbacks(currentActProvider)
-//        Heap.startRecording(applicationContext, "2927087264")
         ViewAutocaptureSDK.register()
 
     }

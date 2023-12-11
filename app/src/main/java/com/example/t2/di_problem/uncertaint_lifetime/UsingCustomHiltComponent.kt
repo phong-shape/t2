@@ -47,7 +47,7 @@ class ContextAccessor @Inject constructor(
 /**
  * Custom Hilt Component
  * Have to declare:
- *  - An empty custom component: can only access SingletonComponent
+ *  - An empty custom component must be an direct or indirect children of SingletonComponent
  *  - A component builder: this one is available globally as a singleton
  *  - An entry point to access exclusively the objects inside the custom component
  *         -> but we can do it better here, by making a wrapper to encapsulate and hide away all the entrypoint logic
